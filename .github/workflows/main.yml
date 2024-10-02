@@ -45,8 +45,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_WEB_SERVER_REPOSITORY }}
         run: | 
-          docker image tag temp_web_image_name:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTTY/$ECR_REPOSITORY:latest
+          docker image tag temp_web_image_name:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+          docker push ${ECR_REGISTTY}/${ECR_REPOSITORY}:latest
 
   api-test-build-image:
     name: API Container - Test and Build
@@ -59,6 +59,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build an Image and Run Tests
         run: |
           docker image build --target production -t temp_api_image_name:latest .
@@ -66,8 +69,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -79,8 +82,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.AWS_ECR_API_SERVER_REPOSITORY }}
         run: | 
-          docker image tag temp_api_image_name:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTTY/$ECR_REPOSITORY:latest
+          docker image tag temp_api_image_name:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+          docker push ${ECR_REGISTTY}/${ECR_REPOSITORY}:latest
 
   deploy:
     name: Deploy
